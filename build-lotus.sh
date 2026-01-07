@@ -280,7 +280,39 @@ echo ""
 echo "Creating filesystem bundle..."
 
 mkdir -p dosbox_fs/C
-cp -r lotus/* dosbox_fs/C/
+
+# Check if files are in a nested directory structure
+if [ -d "lotus/C" ]; then
+    echo "Found nested C:\ directory, flattening structure..."
+    cp -r lotus/C/* dosbox_fs/C/
+elif [ -f "lotus/123.EXE" ]; then
+    echo "Copying Lotus files directly..."
+    cp -r lotus/* dosbox_fs/C/
+else
+    echo "Warning: Unusual directory structure detected"
+    echo "Attempting to find 123.EXE and copy its parent directory..."
+    LOTUS_DIR=$(find lotus -name "123.EXE" -type f -exec dirname {} \; | head -1)
+    if [ -n "$LOTUS_DIR" ]; then
+        echo "Found 123.EXE in: $LOTUS_DIR"
+        cp -r "$LOTUS_DIR"/* dosbox_fs/C/
+    else
+        echo "Error: Cannot locate 123.EXE"
+        exit 1
+    fi
+fi
+
+# Verify the structure
+echo ""
+echo "Verifying filesystem structure:"
+ls -la dosbox_fs/C/ | head -20
+echo ""
+if [ ! -f "dosbox_fs/C/123.EXE" ]; then
+    echo "Error: 123.EXE not found in dosbox_fs/C/"
+    echo "Directory contents:"
+    find dosbox_fs -type f -name "123.EXE"
+    exit 1
+fi
+echo "✓ 123.EXE found in correct location"
 
 # Create autoexec.bat to launch Lotus automatically
 cat > dosbox_fs/autoexec.bat << 'EOF'
