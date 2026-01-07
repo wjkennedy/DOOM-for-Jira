@@ -3,30 +3,7 @@ import { storage } from "@forge/api"
 
 const resolver = new Resolver()
 
-export const macroHandler = async (req) => {
-  const { context } = req
-  const macroId = context.extension.macro?.macroId || "default"
-
-  // Return the macro configuration with unique ID
-  return {
-    macroId,
-    message: "Lotus 1-2-3 Spreadsheet Ready",
-  }
-}
-
-export const resolveMacro = async (req) => {
-  const { context } = req
-  const macroId = context.extension.macro?.macroId || "default"
-
-  // Load saved spreadsheet data if exists
-  const savedData = await storage.get(`lotus123-${macroId}`)
-
-  return {
-    macroId,
-    savedData: savedData || null,
-  }
-}
-
+// Save spreadsheet data to Forge storage
 resolver.define("saveSpreadsheet", async (req) => {
   const { macroId, data } = req.payload
 
@@ -39,6 +16,7 @@ resolver.define("saveSpreadsheet", async (req) => {
   }
 })
 
+// Load spreadsheet data from Forge storage
 resolver.define("loadSpreadsheet", async (req) => {
   const { macroId } = req.payload
 

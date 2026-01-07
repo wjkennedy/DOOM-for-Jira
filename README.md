@@ -43,7 +43,27 @@ The local dev server mocks Forge APIs including storage, so you can test save/lo
 
 ### Deploy to Atlassian
 
-// ... existing code ...
+1. Log in to Forge:
+```bash
+forge login
+```
+
+2. Create the app:
+```bash
+forge register
+```
+
+3. Deploy the app:
+```bash
+forge deploy
+```
+
+4. Install to your Confluence site:
+```bash
+forge install
+```
+
+5. Add the macro to a Confluence page and start using Lotus 1-2-3!
 
 ## Development
 
@@ -84,7 +104,23 @@ forge tunnel
 # Access via the provided Atlassian URL
 ```
 
-// ... existing code ...
+## Building DOSBox WebAssembly
+
+To build the authentic Lotus 1-2-3 experience with DOSBox:
+
+```bash
+# Run the build script
+./build-lotus.sh
+```
+
+See `DOSBOX_BUILD_INSTRUCTIONS.md` for detailed build instructions.
+
+## Architecture
+
+- **Frontend:** Forge React components using @forge/react
+- **Backend:** Forge resolver functions for storage operations
+- **Storage:** Forge storage API for persisting spreadsheet data
+- **Emulation:** DOSBox compiled to WebAssembly (optional, requires build)
 
 ## Troubleshooting
 
@@ -108,7 +144,6 @@ forge tunnel
 - Verify cell references exist
 - Complex formulas may need debugging
 
-// ... existing code ...
-```
+## License
 
-```javascript file="" isHidden
+MIT

@@ -169,13 +169,36 @@ echo ""
 if [ ! -f "configure" ]; then
     echo "Generating configure script..."
     if [ -f "autogen.sh" ]; then
+        echo "Running autogen.sh..."
+        chmod +x autogen.sh
         ./autogen.sh
+        echo "✓ autogen.sh completed"
     elif [ -f "bootstrap" ]; then
+        echo "Running bootstrap..."
+        chmod +x bootstrap
         ./bootstrap
+        echo "✓ bootstrap completed"
     else
-        echo "Error: configure script not found and cannot be generated"
-        echo "Please check the em-dosbox repository structure"
+        echo "Error: configure script not found and no autogen.sh/bootstrap script available"
+        echo ""
+        echo "em-dosbox repository may need manual setup. Please:"
+        echo "  1. cd build/dosbox"
+        echo "  2. Check if autoreconf is available: autoreconf -fi"
+        echo "  3. Or manually create configure script"
+        echo ""
+        echo "Directory contents:"
         ls -la
+        exit 1
+    fi
+    
+    # Verify configure was created
+    if [ ! -f "configure" ]; then
+        echo "Error: configure script was not created by autogen.sh"
+        echo "This repository may require additional setup."
+        echo ""
+        echo "Try manually running:"
+        echo "  cd build/dosbox"
+        echo "  autoreconf -fi"
         exit 1
     fi
     echo "✓ Configure script generated"
