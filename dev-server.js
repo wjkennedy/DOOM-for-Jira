@@ -45,16 +45,70 @@ app.get("/lotus123", (req, res) => {
   <link rel="stylesheet" href="/static/lotus123/styles.css">
 </head>
 <body>
-  <div id="lotus-container" data-macro-id="${macroId}"></div>
+  <div style="font-family: monospace; background: #000; color: #0f0; padding: 10px;">
+    <div style="background: #1e3a5f; padding: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 16px; font-weight: bold; color: #fff;">📊 Lotus 1-2-3</span>
+      <span id="status" style="font-size: 12px; color: #aaa;">Loading DOSBox...</span>
+    </div>
+    <canvas id="canvas" width="720" height="400" style="border: 2px solid #555; display: block; background: #000;"></canvas>
+    <div style="margin-top: 10px; font-size: 12px; color: #888;">
+      <p><strong>Note:</strong> Authentic Lotus 1-2-3 running in DOSBox. Use DOS commands and keyboard controls.</p>
+      <p><strong>Macro ID:</strong> ${macroId}</p>
+    </div>
+  </div>
+  
   <script>
-    // Mock Forge environment
-    window.FORGE_ENV = {
-      macroId: '${macroId}',
-      apiBase: '/api/forge',
-      isLocal: true
+    console.log('[v0] Lotus 1-2-3 Local Dev initializing...');
+    console.log('[v0] Macro ID: ${macroId}');
+    
+    const statusEl = document.getElementById('status');
+    const canvasEl = document.getElementById('canvas');
+    
+    window.Module = {
+      canvas: canvasEl,
+      arguments: ['-c', 'mount c .', '-c', 'c:', '-c', 'cd \\\\', '-c', '123.exe'],
+      preRun: [],
+      postRun: [
+        () => {
+          console.log('[v0] DOSBox post-run complete');
+          statusEl.textContent = 'Lotus 1-2-3 Ready';
+        }
+      ],
+      print: (text) => {
+        console.log('[v0] DOSBox stdout:', text);
+      },
+      printErr: (text) => {
+        console.error('[v0] DOSBox stderr:', text);
+      },
+      setStatus: (text) => {
+        console.log('[v0] DOSBox status:', text);
+        if (text) statusEl.textContent = text;
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: (left) => {
+        const total = Math.max(window.Module.totalDependencies, left);
+        window.Module.totalDependencies = total;
+        const progress = left ? Math.round(((total - left) / total) * 100) : 100;
+        console.log('[v0] DOSBox dependencies:', {
+          remaining: left,
+          total: total,
+          progress: progress + '%'
+        });
+        if (left > 0) {
+          statusEl.textContent = 'Loading files... ' + progress + '%';
+        }
+      },
+      onRuntimeInitialized: () => {
+        console.log('[v0] DOSBox runtime initialized successfully!');
+        statusEl.textContent = 'Starting Lotus 1-2-3...';
+      }
     };
+    
+    console.log('[v0] Loading dosbox_fs.js...');
+    statusEl.textContent = 'Loading Lotus 1-2-3 files...';
   </script>
-  <script src="/static/lotus123/lotus-engine.js"></script>
+  <script src="/static/lotus123/dosbox_fs.js"></script>
+  <script src="/static/lotus123/dosbox.js"></script>
 </body>
 </html>
   `)
