@@ -262,10 +262,8 @@ if [ -z "$DOSBOX_JS" ] && [ -z "$DOSBOX_WASM" ]; then
     echo "Checking src/ directory:"
     ls -la src/ 2>/dev/null || echo "  src/ not found"
     echo ""
-    echo "Checking for any .js/.wasm files:"
-    find . -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer configure | head -20
-    echo ""
-    echo "Please check build.log for errors"
+    echo "Checking for any recently built files:"
+    find build/dosbox -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer build/dosbox/configure 2>/dev/null | head -10
     exit 1
 fi
 
@@ -310,20 +308,20 @@ echo "Copying files to Forge app..."
 
 COPIED_ANY=false
 
-if [ -n "$DOSBOX_JS" ] && [ -f "$DOSBOX_JS" ]; then
-    cp "$DOSBOX_JS" static/lotus123/dosbox.js
+if [ -n "$DOSBOX_JS" ] && [ -f "build/dosbox/$DOSBOX_JS" ]; then
+    cp "build/dosbox/$DOSBOX_JS" static/lotus123/dosbox.js
     echo "✓ Copied dosbox.js"
     COPIED_ANY=true
 else
-    echo "✗ dosbox.js not found"
+    echo "✗ dosbox.js not found at build/dosbox/$DOSBOX_JS"
 fi
 
-if [ -n "$DOSBOX_WASM" ] && [ -f "$DOSBOX_WASM" ]; then
-    cp "$DOSBOX_WASM" static/lotus123/dosbox.wasm
+if [ -n "$DOSBOX_WASM" ] && [ -f "build/dosbox/$DOSBOX_WASM" ]; then
+    cp "build/dosbox/$DOSBOX_WASM" static/lotus123/dosbox.wasm
     echo "✓ Copied dosbox.wasm"
     COPIED_ANY=true
 else
-    echo "✗ dosbox.wasm not found"
+    echo "✗ dosbox.wasm not found at build/dosbox/$DOSBOX_WASM"
 fi
 
 if [ -f "build/dosbox/dosbox_fs.data" ]; then
@@ -343,13 +341,14 @@ if [ "$COPIED_ANY" = false ]; then
     echo "Error: No DOSBox files were copied"
     echo ""
     echo "Debug information:"
-    echo "DOSBOX_OUTPUT=$DOSBOX_OUTPUT"
+    echo "DOSBOX_JS=$DOSBOX_JS"
+    echo "DOSBOX_WASM=$DOSBOX_WASM"
     echo ""
-    echo "Files in output directory:"
-    ls -la "$DOSBOX_OUTPUT" 2>/dev/null || echo "  Directory not accessible"
-    echo ""
-    echo "Build directory contents:"
+    echo "Checking build/dosbox for files:"
     ls -la build/dosbox/*.{js,wasm,data} 2>/dev/null || echo "  No matching files"
+    echo ""
+    echo "Checking for any recently built files:"
+    find build/dosbox -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer build/dosbox/configure 2>/dev/null | head -10
     exit 1
 fi
 
