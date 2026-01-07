@@ -81,11 +81,14 @@ if [ ! -d "lotus" ] || [ ! -f "lotus/123.EXE" ]; then
             # Find all .img or .ima files and extract
             find lotus_temp -type f -iname "*.img" -o -iname "*.ima" | while read imgfile; do
                 echo "  Extracting: $(basename "$imgfile")"
-                TEMP_EXTRACT="lotus_extract_$$"
+                TEMP_EXTRACT="lotus_extract_$$_$(basename "$imgfile")"
                 mkdir -p "$TEMP_EXTRACT"
                 7z x -y -o"$TEMP_EXTRACT" "$imgfile" >/dev/null 2>&1 || true
                 
-                find "$TEMP_EXTRACT" -type f -exec cp {} lotus/ \; 2>/dev/null || true
+                # Copy all files, preserving directory structure
+                if [ -d "$TEMP_EXTRACT" ]; then
+                    cp -r "$TEMP_EXTRACT"/* lotus/ 2>/dev/null || true
+                fi
                 rm -rf "$TEMP_EXTRACT"
             done
         elif [ "$EXTRACT_TOOL" = "mtools" ]; then
@@ -291,18 +294,32 @@ echo "Creating filesystem bundle..."
 mkdir -p dosbox_fs/C
 
 echo "Copying Lotus files with proper directory structure..."
-if [ -d "lotus/C" ]; then
-    echo "  Found nested C:\ directory, flattening..."
-    cp -r lotus/C/* dosbox_fs/C/ 2>/dev/null || true
-elif [ -d "lotus/123R24" ]; then
-    echo "  Found 123R24 directory, using it..."
-    cp -r lotus/123R24/* dosbox_fs/C/ 2>/dev/null || true
-else
-    echo "  Copying all files..."
-    cp -r lotus/* dosbox_fs/C/ 2>/dev/null || true
+
+# First, find where 123.EXE actually is
+LOTUS_EXE_PATH=$(find lotus -name "123.EXE" -type f | head -1)
+
+if [ -z "$LOTUS_EXE_PATH" ]; then
+    echo "Error: 123.EXE not found in extracted files!"
+    echo "Extracted structure:"
+    find lotus -type f -name "*.EXE"
+    exit 1
 fi
 
-# Verify the structure
+# Get the directory containing 123.EXE
+LOTUS_SOURCE_DIR=$(dirname "$LOTUS_EXE_PATH")
+echo "  Found 123.EXE in: $LOTUS_SOURCE_DIR"
+
+# Copy all files from that directory to C:\
+echo "  Copying files from $LOTUS_SOURCE_DIR to dosbox_fs/C/"
+cp -r "$LOTUS_SOURCE_DIR"/* dosbox_fs/C/ 2>/dev/null || true
+
+# Also copy any files from parent directories that might be needed
+# (like HELP files, drivers, etc.)
+if [ "$LOTUS_SOURCE_DIR" != "lotus" ]; then
+    echo "  Copying additional files from lotus/ root..."
+    find lotus -maxdepth 1 -type f $$ -name "*.HLP" -o -name "*.DRV" -o -name "*.CNF" $$ -exec cp {} dosbox_fs/C/ \; 2>/dev/null || true
+fi
+
 echo ""
 echo "Verifying filesystem structure:"
 ls -la dosbox_fs/C/ | head -20
@@ -318,11 +335,15 @@ echo "✓ 123.EXE found in correct location"
 cat > dosbox_fs/C/123.CNF << 'EOF'
 [CONFIG]
 Name=Forge User
-Company=Atlassian
-SerialNumber=123-456-789
+Company=Atlassian Confluence
+SerialNumber=000-000-000
+Registered=1
+Installed=1
+InstallDate=01/01/2026
 Driver=GRAPHICS.DRV
 PrinterDriver=PRINTER.DRV
 InstallComplete=1
+Version=2.4
 EOF
 
 echo "✓ Created pre-configured 123.CNF"
@@ -332,19 +353,18 @@ cat > dosbox_fs/autoexec.bat << 'EOF'
 @echo off
 mount C .
 C:
+cls
 echo.
-echo Lotus 1-2-3 for Confluence
-echo ===========================
+echo Lotus 1-2-3 Release 2.4 for Confluence
+echo =======================================
 echo.
-echo Note: Installation has been bypassed.
-echo If you see errors, the disk images may need to be
-echo extracted differently.
+dir /w
 echo.
-cd \
-dir
+echo Launching Lotus 1-2-3...
 echo.
-echo Attempting to launch 123.exe...
-123.exe /C
+REM Try launching without flags first
+123.exe
+REM If that fails, the autoexec will stop here
 EOF
 
 # Package filesystem
