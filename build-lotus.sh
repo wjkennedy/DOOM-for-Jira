@@ -209,12 +209,13 @@ if [ ! -f "Makefile" ]; then
     emconfigure ./configure --disable-opengl --disable-sdl2-test
 fi
 
-emmake make
+echo "Running emmake make..."
+emmake make 2>&1 | tee build.log
 
 if [ $? -ne 0 ]; then
     echo ""
     echo "Error: Build failed"
-    echo "Check the error messages above for details"
+    echo "Check build.log for details"
     exit 1
 fi
 
@@ -225,42 +226,55 @@ echo ""
 echo "Locating DOSBox output files..."
 echo ""
 
-# em-dosbox typically outputs dosbox.html, dosbox.js, and dosbox.wasm
-# Find the actual output location
-DOSBOX_OUTPUT=""
+# em-dosbox typically outputs to src/ directory
+DOSBOX_JS=""
+DOSBOX_WASM=""
 
-# Check common output locations
-if [ -f "dosbox.html" ]; then
-    echo "✓ Found dosbox.html in current directory"
-    DOSBOX_OUTPUT="."
-elif [ -f "src/dosbox.html" ]; then
-    echo "✓ Found dosbox.html in src/"
-    DOSBOX_OUTPUT="src"
-elif [ -f "src/dosbox" ]; then
-    echo "✓ Found dosbox executable in src/"
-    DOSBOX_OUTPUT="src"
-else
-    echo "Searching for DOSBox build outputs..."
+# Search for dosbox.js
+echo "Searching for dosbox.js..."
+find . -name "*.js" -type f | grep -E "(dosbox|em-dosbox)" | while read file; do
+    echo "  Found: $file"
+done
+
+DOSBOX_JS=$(find . -name "dosbox.js" -type f | head -1)
+if [ -z "$DOSBOX_JS" ]; then
+    # Try alternative names
+    DOSBOX_JS=$(find . -name "em-dosbox.js" -type f | head -1)
+fi
+
+# Search for dosbox.wasm
+echo "Searching for dosbox.wasm..."
+find . -name "*.wasm" -type f | while read file; do
+    echo "  Found: $file"
+done
+
+DOSBOX_WASM=$(find . -name "dosbox.wasm" -type f | head -1)
+if [ -z "$DOSBOX_WASM" ]; then
+    # Try alternative names
+    DOSBOX_WASM=$(find . -name "em-dosbox.wasm" -type f | head -1)
+fi
+
+if [ -z "$DOSBOX_JS" ] && [ -z "$DOSBOX_WASM" ]; then
     echo ""
-    echo "Directory structure:"
+    echo "Error: No DOSBox binaries found after build"
+    echo ""
+    echo "Build output may be in an unexpected location."
+    echo "Checking src/ directory:"
     ls -la src/ 2>/dev/null || echo "  src/ not found"
     echo ""
-    echo "Looking for dosbox files:"
-    find . -name "dosbox" -o -name "dosbox.html" -o -name "dosbox.js" 2>/dev/null | head -10
+    echo "Checking for any .js/.wasm files:"
+    find . -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer configure | head -20
     echo ""
-    
-    # Look for any dosbox.js file
-    FOUND_JS=$(find . -name "dosbox.js" -type f | head -1)
-    if [ -n "$FOUND_JS" ]; then
-        DOSBOX_OUTPUT=$(dirname "$FOUND_JS")
-        echo "Found dosbox.js at: $DOSBOX_OUTPUT"
-    else
-        echo "Error: No DOSBox output files found"
-        echo ""
-        echo "The build may have failed. Check build output above."
-        echo "Expected files: dosbox.html or dosbox.js"
-        exit 1
-    fi
+    echo "Please check build.log for errors"
+    exit 1
+fi
+
+echo ""
+if [ -n "$DOSBOX_JS" ]; then
+    echo "✓ Found dosbox.js at: $DOSBOX_JS"
+fi
+if [ -n "$DOSBOX_WASM" ]; then
+    echo "✓ Found dosbox.wasm at: $DOSBOX_WASM"
 fi
 
 # Create dosbox filesystem bundle
@@ -296,26 +310,20 @@ echo "Copying files to Forge app..."
 
 COPIED_ANY=false
 
-if [ -f "$DOSBOX_OUTPUT/dosbox.js" ]; then
-    cp "$DOSBOX_OUTPUT/dosbox.js" static/lotus123/
+if [ -n "$DOSBOX_JS" ] && [ -f "$DOSBOX_JS" ]; then
+    cp "$DOSBOX_JS" static/lotus123/dosbox.js
     echo "✓ Copied dosbox.js"
     COPIED_ANY=true
+else
+    echo "✗ dosbox.js not found"
 fi
 
-if [ -f "$DOSBOX_OUTPUT/dosbox.html" ]; then
-    cp "$DOSBOX_OUTPUT/dosbox.html" static/lotus123/
-    echo "✓ Copied dosbox.html"
-fi
-
-if [ -f "$DOSBOX_OUTPUT/dosbox.wasm" ]; then
-    cp "$DOSBOX_OUTPUT/dosbox.wasm" static/lotus123/
+if [ -n "$DOSBOX_WASM" ] && [ -f "$DOSBOX_WASM" ]; then
+    cp "$DOSBOX_WASM" static/lotus123/dosbox.wasm
     echo "✓ Copied dosbox.wasm"
     COPIED_ANY=true
-fi
-
-if [ -f "$DOSBOX_OUTPUT/dosbox.wasm.js" ]; then
-    cp "$DOSBOX_OUTPUT/dosbox.wasm.js" static/lotus123/
-    echo "✓ Copied dosbox.wasm.js"
+else
+    echo "✗ dosbox.wasm not found"
 fi
 
 if [ -f "build/dosbox/dosbox_fs.data" ]; then
