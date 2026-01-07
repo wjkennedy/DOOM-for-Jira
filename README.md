@@ -4,14 +4,13 @@ A Lotus 1-2-3 spreadsheet application packaged as a Forge app for Atlassian Conf
 
 ## Features
 
-- 📊 Classic Lotus 1-2-3 spreadsheet interface
-- 💾 Save spreadsheets to Confluence storage
-- 📝 Formula support with cell references
-- 🎨 Multiple cell formats (Number, Currency, Percent, Date)
-- ⌨️ Keyboard navigation and shortcuts
-- 📋 Copy/paste functionality
-- 🔢 100 rows x 26 columns (expandable)
-- 🖱️ Click and double-click cell editing
+- 📊 **Authentic Lotus 1-2-3** running via DOSBox WebAssembly
+- 💾 Classic DOS spreadsheet experience in Confluence
+- ⌨️ Full keyboard support with DOS controls
+- 🎨 Retro green-screen terminal aesthetic
+- 📝 Original Lotus 1-2-3 formula and macro language
+- 🖱️ Mouse support for cell selection
+- 💿 Real DOS environment with file system
 
 ## Quick Start
 
@@ -43,27 +42,33 @@ The local dev server mocks Forge APIs including storage, so you can test save/lo
 
 ### Deploy to Atlassian
 
-1. Log in to Forge:
+1. **Build DOSBox** (required for authentic Lotus 1-2-3):
+```bash
+./build-lotus.sh
+```
+This compiles DOSBox to WebAssembly and packages Lotus 1-2-3.
+
+2. Log in to Forge:
 ```bash
 forge login
 ```
 
-2. Create the app:
+3. Create the app:
 ```bash
 forge register
 ```
 
-3. Deploy the app:
+4. Deploy the app:
 ```bash
 forge deploy
 ```
 
-4. Install to your Confluence site:
+5. Install to your Confluence site:
 ```bash
 forge install
 ```
 
-5. Add the macro to a Confluence page and start using Lotus 1-2-3!
+6. Add the macro to a Confluence page and start using Lotus 1-2-3!
 
 ## Development
 
@@ -106,14 +111,27 @@ forge tunnel
 
 ## Building DOSBox WebAssembly
 
-To build the authentic Lotus 1-2-3 experience with DOSBox:
+**Required** for the authentic Lotus 1-2-3 experience:
 
 ```bash
+# Install prerequisites (macOS with Homebrew)
+brew install emscripten 7zip mtools
+
 # Run the build script
 ./build-lotus.sh
 ```
 
-See `DOSBOX_BUILD_INSTRUCTIONS.md` for detailed build instructions.
+The script will:
+1. Download and compile em-dosbox to WebAssembly
+2. Download Lotus 1-2-3 disk images from WinWorld
+3. Extract and package the filesystem
+4. Copy all files to static/lotus123/
+
+**Build outputs:**
+- `dosbox.js` (189KB) - DOSBox WebAssembly loader
+- `dosbox.wasm` (2MB) - DOSBox compiled binary
+- `dosbox_fs.data` (3MB) - Lotus 1-2-3 files and DOS filesystem
+- `dosbox_fs.js` (7KB) - Filesystem loader
 
 ## Architecture
 
