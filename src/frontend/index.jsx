@@ -62,6 +62,7 @@ const App = () => {
 
         window.Module = {
           canvas: canvasRef.current,
+          arguments: ["-c", "mount c .", "-c", "c:", "-c", "cd \\", "-c", "123.exe"],
           preRun: [],
           postRun: [
             () => {
