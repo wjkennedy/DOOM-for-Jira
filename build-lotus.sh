@@ -263,7 +263,7 @@ if [ -z "$DOSBOX_JS" ] && [ -z "$DOSBOX_WASM" ]; then
     ls -la src/ 2>/dev/null || echo "  src/ not found"
     echo ""
     echo "Checking for any recently built files:"
-    find build/dosbox -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer build/dosbox/configure 2>/dev/null | head -10
+    find build/dosbox -type f -name "*.js" -o -name "*.wasm" -newer build/dosbox/configure 2>/dev/null | head -10
     exit 1
 fi
 
@@ -288,6 +288,26 @@ cat > dosbox_fs/autoexec.bat << 'EOF'
 mount C .
 C:
 cd \
+REM Run INSTALL.EXE first to register, then launch 123.EXE
+REM Check if already installed by looking for 123.CNF
+if not exist 123.CNF goto install
+goto run123
+
+:install
+echo Running Lotus 1-2-3 Installation...
+echo.
+echo This will set up Lotus 1-2-3 with default settings.
+echo.
+REM Run install with default parameters
+INSTALL.EXE /AUTO /NAME="Forge User" /COMPANY="Atlassian" /SERIAL="123456789"
+if errorlevel 1 goto installfail
+goto run123
+
+:installfail
+echo Installation incomplete. Running 123 anyway...
+goto run123
+
+:run123
 123.exe
 EOF
 
@@ -348,7 +368,7 @@ if [ "$COPIED_ANY" = false ]; then
     ls -la build/dosbox/*.{js,wasm,data} 2>/dev/null || echo "  No matching files"
     echo ""
     echo "Checking for any recently built files:"
-    find build/dosbox -type f $$ -name "*.js" -o -name "*.wasm" $$ -newer build/dosbox/configure 2>/dev/null | head -10
+    find build/dosbox -type f -name "*.js" -o -name "*.wasm" -newer build/dosbox/configure 2>/dev/null | head -10
     exit 1
 fi
 

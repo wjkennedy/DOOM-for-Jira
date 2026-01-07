@@ -14,6 +14,11 @@ app.use(express.json())
 // Serve static files
 app.use("/static", express.static(path.join(__dirname, "static")))
 
+app.use("/dosbox_fs.data", express.static(path.join(__dirname, "static/lotus123/dosbox_fs.data")))
+app.use("/dosbox_fs.js", express.static(path.join(__dirname, "static/lotus123/dosbox_fs.js")))
+app.use("/dosbox.wasm", express.static(path.join(__dirname, "static/lotus123/dosbox.wasm")))
+app.use("/dosbox.js", express.static(path.join(__dirname, "static/lotus123/dosbox.js")))
+
 // Mock Forge storage (in-memory for local dev)
 const mockStorage = new Map()
 
@@ -107,8 +112,8 @@ app.get("/lotus123", (req, res) => {
     console.log('[v0] Loading dosbox_fs.js...');
     statusEl.textContent = 'Loading Lotus 1-2-3 files...';
   </script>
-  <script src="/static/lotus123/dosbox_fs.js"></script>
-  <script src="/static/lotus123/dosbox.js"></script>
+  <script src="/dosbox_fs.js"></script>
+  <script src="/dosbox.js"></script>
 </body>
 </html>
   `)
