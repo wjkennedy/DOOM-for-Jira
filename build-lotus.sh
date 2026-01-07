@@ -81,7 +81,12 @@ if [ ! -d "lotus" ] || [ ! -f "lotus/123.EXE" ]; then
             # Find all .img or .ima files and extract
             find lotus_temp -type f -iname "*.img" -o -iname "*.ima" | while read imgfile; do
                 echo "  Extracting: $(basename "$imgfile")"
-                7z x -y -o"lotus" "$imgfile" >/dev/null 2>&1 || true
+                TEMP_EXTRACT="lotus_extract_$$"
+                mkdir -p "$TEMP_EXTRACT"
+                7z x -y -o"$TEMP_EXTRACT" "$imgfile" >/dev/null 2>&1 || true
+                
+                find "$TEMP_EXTRACT" -type f -exec cp {} lotus/ \; 2>/dev/null || true
+                rm -rf "$TEMP_EXTRACT"
             done
         elif [ "$EXTRACT_TOOL" = "mtools" ]; then
             # Use mtools to copy files from disk images
@@ -153,6 +158,10 @@ if [ ! -d "lotus" ] || [ ! -f "lotus/123.EXE" ]; then
 fi
 
 echo "✓ Lotus 1-2-3 files verified (123.EXE found)"
+
+echo ""
+echo "Available Lotus executables:"
+ls -1 build/dosbox/lotus/*.EXE 2>/dev/null || echo "  (checking...)"
 
 # Build DOSBox with Emscripten
 echo ""
@@ -281,25 +290,8 @@ echo "Creating filesystem bundle..."
 
 mkdir -p dosbox_fs/C
 
-# Check if files are in a nested directory structure
-if [ -d "lotus/C" ]; then
-    echo "Found nested C:\ directory, flattening structure..."
-    cp -r lotus/C/* dosbox_fs/C/
-elif [ -f "lotus/123.EXE" ]; then
-    echo "Copying Lotus files directly..."
-    cp -r lotus/* dosbox_fs/C/
-else
-    echo "Warning: Unusual directory structure detected"
-    echo "Attempting to find 123.EXE and copy its parent directory..."
-    LOTUS_DIR=$(find lotus -name "123.EXE" -type f -exec dirname {} \; | head -1)
-    if [ -n "$LOTUS_DIR" ]; then
-        echo "Found 123.EXE in: $LOTUS_DIR"
-        cp -r "$LOTUS_DIR"/* dosbox_fs/C/
-    else
-        echo "Error: Cannot locate 123.EXE"
-        exit 1
-    fi
-fi
+echo "Copying Lotus files and flattening directory structure..."
+find lotus -type f -exec cp {} dosbox_fs/C/ \; 2>/dev/null || true
 
 # Verify the structure
 echo ""
@@ -309,10 +301,22 @@ echo ""
 if [ ! -f "dosbox_fs/C/123.EXE" ]; then
     echo "Error: 123.EXE not found in dosbox_fs/C/"
     echo "Directory contents:"
-    find dosbox_fs -type f -name "123.EXE"
+    find dosbox_fs -type f -name "*.EXE"
     exit 1
 fi
 echo "✓ 123.EXE found in correct location"
+
+cat > dosbox_fs/C/123.CNF << 'EOF'
+[CONFIG]
+Name=Forge User
+Company=Atlassian
+SerialNumber=123-456-789
+Driver=GRAPHICS.DRV
+PrinterDriver=PRINTER.DRV
+InstallComplete=1
+EOF
+
+echo "✓ Created pre-configured 123.CNF"
 
 # Create autoexec.bat to launch Lotus automatically
 cat > dosbox_fs/autoexec.bat << 'EOF'
@@ -320,26 +324,9 @@ cat > dosbox_fs/autoexec.bat << 'EOF'
 mount C .
 C:
 cd \
-REM Run INSTALL.EXE first to register, then launch 123.EXE
-REM Check if already installed by looking for 123.CNF
-if not exist 123.CNF goto install
-goto run123
-
-:install
-echo Running Lotus 1-2-3 Installation...
+cls
+echo Starting Lotus 1-2-3...
 echo.
-echo This will set up Lotus 1-2-3 with default settings.
-echo.
-REM Run install with default parameters
-INSTALL.EXE /AUTO /NAME="Forge User" /COMPANY="Atlassian" /SERIAL="123456789"
-if errorlevel 1 goto installfail
-goto run123
-
-:installfail
-echo Installation incomplete. Running 123 anyway...
-goto run123
-
-:run123
 123.exe
 EOF
 
