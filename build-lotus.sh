@@ -290,8 +290,17 @@ echo "Creating filesystem bundle..."
 
 mkdir -p dosbox_fs/C
 
-echo "Copying Lotus files and flattening directory structure..."
-find lotus -type f -exec cp {} dosbox_fs/C/ \; 2>/dev/null || true
+echo "Copying Lotus files with proper directory structure..."
+if [ -d "lotus/C" ]; then
+    echo "  Found nested C:\ directory, flattening..."
+    cp -r lotus/C/* dosbox_fs/C/ 2>/dev/null || true
+elif [ -d "lotus/123R24" ]; then
+    echo "  Found 123R24 directory, using it..."
+    cp -r lotus/123R24/* dosbox_fs/C/ 2>/dev/null || true
+else
+    echo "  Copying all files..."
+    cp -r lotus/* dosbox_fs/C/ 2>/dev/null || true
+fi
 
 # Verify the structure
 echo ""
@@ -323,11 +332,19 @@ cat > dosbox_fs/autoexec.bat << 'EOF'
 @echo off
 mount C .
 C:
-cd \
-cls
-echo Starting Lotus 1-2-3...
 echo.
-123.exe
+echo Lotus 1-2-3 for Confluence
+echo ===========================
+echo.
+echo Note: Installation has been bypassed.
+echo If you see errors, the disk images may need to be
+echo extracted differently.
+echo.
+cd \
+dir
+echo.
+echo Attempting to launch 123.exe...
+123.exe /C
 EOF
 
 # Package filesystem
