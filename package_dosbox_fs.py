@@ -6,34 +6,47 @@ Package DOSBox filesystem into Emscripten data file
 import os
 import sys
 import subprocess
+import shutil
 
 def find_file_packager():
     """Find the file_packager tool in Emscripten SDK"""
     
-    # Try common locations
-    locations = [
-        'file_packager',
-        'file_packager.py',
-        os.path.join(os.environ.get('EMSDK', ''), 'upstream', 'emscripten', 'tools', 'file_packager.py'),
-    ]
-    
-    # Also check EMSDK environment variable
-    emsdk_path = os.environ.get('EMSDK')
-    if emsdk_path:
-        locations.append(os.path.join(emsdk_path, 'upstream', 'emscripten', 'tools', 'file_packager.py'))
-        locations.append(os.path.join(emsdk_path, 'emscripten', 'incoming', 'tools', 'file_packager.py'))
-    
-    # Check if emcc is in PATH and find its directory
     try:
-        emcc_path = subprocess.check_output(['which', 'emcc'], text=True).strip()
-        emscripten_dir = os.path.dirname(emcc_path)
-        locations.append(os.path.join(emscripten_dir, 'tools', 'file_packager.py'))
-    except (subprocess.CalledProcessError, FileNotFoundError):
+        result = subprocess.run(['which', 'file_packager'], capture_output=True, text=True)
+        if result.returncode == 0 and result.stdout.strip():
+            path = result.stdout.strip()
+            if os.path.exists(path):
+                return path
+    except:
         pass
     
-    for loc in locations:
-        if os.path.exists(loc):
-            return loc
+    emcc_bin = shutil.which('emcc')
+    if emcc_bin:
+        # Resolve symlinks to get real path
+        emcc_real = os.path.realpath(emcc_bin)
+        emscripten_dir = os.path.dirname(emcc_real)
+        
+        # Check for file_packager.py in tools directory
+        packager_path = os.path.join(emscripten_dir, 'tools', 'file_packager.py')
+        if os.path.exists(packager_path):
+            return packager_path
+        
+        # Check parent directory (for Homebrew installations)
+        parent_dir = os.path.dirname(emscripten_dir)
+        packager_path = os.path.join(parent_dir, 'libexec', 'tools', 'file_packager.py')
+        if os.path.exists(packager_path):
+            return packager_path
+    
+    # Try EMSDK environment variable
+    emsdk_path = os.environ.get('EMSDK')
+    if emsdk_path:
+        locations = [
+            os.path.join(emsdk_path, 'upstream', 'emscripten', 'tools', 'file_packager.py'),
+            os.path.join(emsdk_path, 'emscripten', 'incoming', 'tools', 'file_packager.py'),
+        ]
+        for loc in locations:
+            if os.path.exists(loc):
+                return loc
     
     return None
 
@@ -43,11 +56,6 @@ def package_filesystem(source_dir, output_file):
     if not os.path.exists(source_dir):
         print(f"Error: Source directory '{source_dir}' does not exist")
         sys.exit(1)
-    
-    try:
-        subprocess.run(['emcc', '--generate-config'], check=False, capture_output=True)
-    except Exception:
-        pass
     
     # Find file_packager
     packager = find_file_packager()
@@ -59,6 +67,9 @@ def package_filesystem(source_dir, output_file):
         print("")
         print("Make sure to activate Emscripten SDK:")
         print("  source $EMSDK/emsdk_env.sh")
+        print("")
+        print("Or if installed via Homebrew:")
+        print("  brew install emscripten")
         sys.exit(1)
     
     print(f"Using file_packager: {packager}")
@@ -66,39 +77,31 @@ def package_filesystem(source_dir, output_file):
     
     env = os.environ.copy()
     
-    config_locations = []
-    
-    # Check where emcc is actually installed
-    try:
-        emcc_path = subprocess.check_output(['which', 'emcc'], text=True).strip()
-        emcc_real = os.path.realpath(emcc_path)
+    emcc_bin = shutil.which('emcc')
+    if emcc_bin:
+        emcc_real = os.path.realpath(emcc_bin)
         emscripten_dir = os.path.dirname(emcc_real)
         
-        # Common config locations relative to emcc
-        config_locations.extend([
+        config_locations = [
             os.path.join(emscripten_dir, '.emscripten'),
             os.path.join(os.path.dirname(emscripten_dir), 'libexec', '.emscripten'),
             os.path.expanduser('~/.emscripten'),
-        ])
+        ]
         
-        print(f"Found emcc at: {emcc_real}")
-    except:
-        pass
-    
-    # Also check EMSDK
-    emsdk_root = env.get('EMSDK')
-    if emsdk_root:
-        config_locations.extend([
-            os.path.join(emsdk_root, '.emscripten'),
-            os.path.join(emsdk_root, 'upstream', 'emscripten', '.emscripten'),
-        ])
-    
-    # Find first existing config
-    for config_path in config_locations:
-        if os.path.exists(config_path):
-            env['EM_CONFIG'] = config_path
-            print(f"Using Emscripten config: {config_path}")
-            break
+        # Also check EMSDK
+        emsdk_root = env.get('EMSDK')
+        if emsdk_root:
+            config_locations.extend([
+                os.path.join(emsdk_root, '.emscripten'),
+                os.path.join(emsdk_root, 'upstream', 'emscripten', '.emscripten'),
+            ])
+        
+        # Find first existing config
+        for config_path in config_locations:
+            if os.path.exists(config_path):
+                env['EM_CONFIG'] = config_path
+                print(f"Using Emscripten config: {config_path}")
+                break
     
     cmd = [
         'python3',
@@ -108,6 +111,8 @@ def package_filesystem(source_dir, output_file):
         f'{source_dir}@/',
         '--js-output=' + output_file.replace('.data', '.js')
     ]
+    
+    print(f"Running: {' '.join(cmd)}")
     
     try:
         subprocess.run(cmd, check=True, env=env)
