@@ -4,13 +4,15 @@ A doomgeneric WebAssembly port packaged as a Forge app for Atlassian Jira and Co
 
 ## Features
 
-- 🎮 Authentic DOOM gameplay via doomgeneric port
-- 🕹️ WebAssembly-powered performance
-- 📦 Includes shareware Episode 1 (doom1.wad)
-- 🎵 Full sound and music support
-- ⌨️ Classic DOOM controls
-- 🌐 Runs entirely in the browser
-- 🚀 Simple build process with automated script
+-  Authentic DOOM gameplay via doomgeneric port
+-  WebAssembly-powered performance
+-  Includes shareware Episode 1 (doom1.wad)
+-  Full sound and music support
+-  Classic DOOM controls
+-  Runs entirely in the browser
+-  Simple build process with automated script
+
+![doom-jira.png](doom-jira.png)
 
 ## Quick Start
 
