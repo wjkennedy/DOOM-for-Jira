@@ -1,4 +1,5 @@
 # DOOM Forge App for Jira & Confluence
+![jira-doom.png](jira-doom.png)
 
 A doomgeneric WebAssembly port packaged as a Forge app for Atlassian Jira and Confluence. This is the actual DOOM game engine compiled to WebAssembly with shareware WAD file support.
 
