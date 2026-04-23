@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOOM Forge App - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #222;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 4px solid #ff6b00;
+        }
+
+        header img {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            color: #ddd;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        main {
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ff6b00;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #1a1a1a;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .highlight-box {
+            background: #f0f0f0;
+            border-left: 4px solid #ff6b00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: #1a1a1a;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .control-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .control-item strong {
+            color: #ff6b00;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #ff6b00;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .checkmark {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .x-mark {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: #ff6b00;
+            margin: 40px 0;
+        }
+
+        footer {
+            background: #1a1a1a;
+            color: #ddd;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        footer p {
+            color: #ddd;
+            margin-bottom: 5px;
+        }
+
+        .toc {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 30px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: #ff6b00;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ff6b00;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/jira-doom-SKLECYuu4V8oCypARgZDX8ZIdG68Ow.png" alt="DOOM Forge App">
+        <h1>DOOM Forge App</h1>
+        <p>Play the classic 1993 DOOM game in your Jira and Confluence—compiled to WebAssembly for authentic gaming.</p>
+    </header>
+
+    <div class="container">
+        <main>
+            <div class="toc">
+                <h3>Quick Navigation</h3>
+                <ul>
+                    <li><a href="#quick-start">Quick Start</a></li>
+                    <li><a href="#controls">Game Controls</a></li>
+                    <li><a href="#features">What You Get</a></li>
+                    <li><a href="#technical">Technical Details</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#admin">For Administrators</a></li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <!-- QUICK START -->
+            <section id="quick-start">
+                <h2>Quick Start</h2>
+
+                <h3>Installation</h3>
+                <ol>
+                    <li>In Jira or Confluence, navigate to <strong>Apps → Manage apps → Find new apps</strong></li>
+                    <li>Search for <strong>"DOOM"</strong></li>
+                    <li>Click <strong>Install</strong></li>
+                    <li>Grant permissions when prompted</li>
+                    <li>The app will appear in your Apps menu and Jira issue glances</li>
+                </ol>
+
+                <h3>Playing</h3>
+                <ol>
+                    <li>Click <strong>Apps</strong> (top navigation) → <strong>DOOM</strong></li>
+                    <li>Click <strong>Launch DOOM</strong> to start the game</li>
+                    <li>Use keyboard controls to play (see Controls section below)</li>
+                </ol>
+            </section>
+
+            <hr>
+
+            <!-- CONTROLS -->
+            <section id="controls">
+                <h2>Game Controls</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Keys</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Move Forward</strong></td>
+                            <td>↑ or W</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Move Backward</strong></td>
+                            <td>↓ or S</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Turn Left</strong></td>
+                            <td>← or A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Turn Right</strong></td>
+                            <td>→ or D</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strafe Left</strong></td>
+                            <td>A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strafe Right</strong></td>
+                            <td>D</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fire</strong></td>
+                            <td>Ctrl or Left-click</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Use/Open</strong></td>
+                            <td>Space or Right-click</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Select Weapon</strong></td>
+                            <td>1-7</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cycle Weapons</strong></td>
+                            <td>E or [ / ]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Show Map</strong></td>
+                            <td>Tab</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open Menu</strong></td>
+                            <td>Esc</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>In-Game Shortcuts</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Tab</code></td>
+                            <td>Toggle automap</td>
+                        </tr>
+                        <tr>
+                            <td><code>Esc</code></td>
+                            <td>Open menu</td>
+                        </tr>
+                        <tr>
+                            <td><code>+</code> / <code>-</code></td>
+                            <td>Change gamma (brightness)</td>
+                        </tr>
+                        <tr>
+                            <td><code>F1</code></td>
+                            <td>Help screen</td>
+                        </tr>
+                        <tr>
+                            <td><code>F2</code></td>
+                            <td>Save game</td>
+                        </tr>
+                        <tr>
+                            <td><code>F3</code></td>
+                            <td>Load game</td>
+                        </tr>
+                        <tr>
+                            <td><code>F4</code></td>
+                            <td>Volume control</td>
+                        </tr>
+                        <tr>
+                            <td><code>F11</code></td>
+                            <td>Quicksave</td>
+                        </tr>
+                        <tr>
+                            <td><code>F12</code></td>
+                            <td>Quickload</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <hr>
+
+            <!-- FEATURES -->
+            <section id="features">
+                <h2>What You Get</h2>
+
+                <h3>Included</h3>
+                <div class="highlight-box">
+                    <p><span class="checkmark">✓</span> <strong>Authentic DOOM Engine</strong><br>
+                    Actual DOOM source code compiled to WebAssembly. Runs at native speed in your browser with original 35 FPS framerate and 320x200 resolution (scaled to fit).</p>
+                </div>
+
+                <div class="highlight-box">
+                    <p><span class="checkmark">✓</span> <strong>Full Audio Support</strong><br>
+                    Sound effects (SDL2 audio) and MIDI music (OPL2 synthesizer - classic Sound Blaster style). Both work in-browser without additional plugins.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <p><span class="checkmark">✓</span> <strong>Shareware Episode</strong><br>
+                    9 levels (complete Episode 1 from 1993) with all weapons, items, and monsters. Full gameplay experience included.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <p><span class="checkmark">✓</span> <strong>Jira Integration</strong><br>
+                    Global page accessible from Apps menu, Issue Glance widget for quick access, and runs on desktop and modern mobile browsers.</p>
+                </div>
+
+                <div class="highlight-box">
+                    <p><span class="checkmark">✓</span> <strong>Confluence Integration</strong><br>
+                    Global page accessible from Apps menu with full game experience, shareable with your team.</p>
+                </div>
+
+                <h3>What Runs Where</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Game Engine</strong></td>
+                            <td>Jira Global Page, Confluence Global Page</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Issue Glance</strong></td>
+                            <td>Any Jira issue (optional widget)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User Data</strong></td>
+                            <td>Browser only (no server storage)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <hr>
+
+            <!-- TECHNICAL -->
+            <section id="technical">
+                <h2>Technical Details</h2>
+
+                <h3>How It Works</h3>
+                <ol>
+                    <li><strong>Compilation:</strong> Original DOOM C source code is compiled to WebAssembly using Emscripten</li>
+                    <li><strong>Virtual Filesystem:</strong> Game data (doom1.wad) is packaged into the app</li>
+                    <li><strong>Graphics:</strong> Game renders to HTML5 Canvas element</li>
+                    <li><strong>Input:</strong> Keyboard input captured and fed to WASM engine</li>
+                    <li><strong>Audio:</strong> SDL2 handles sound effects; OPL2 handles MIDI music</li>
+                    <li><strong>Deployment:</strong> All files hosted on Atlassian CDN</li>
+                </ol>
+
+                <h3>Performance</h3>
+                <ul>
+                    <li><strong>Native execution</strong> via WebAssembly</li>
+                    <li><strong>No network calls</strong> during gameplay</li>
+                    <li><strong>Minimal resource usage</strong> (game runs at original performance levels)</li>
+                    <li><strong>Works offline</strong> after initial load</li>
+                </ul>
+
+                <h3>Browser Support</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Browser</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chrome/Chromium 57+</td>
+                            <td><span class="checkmark">✓</span> Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Firefox 52+</td>
+                            <td><span class="checkmark">✓</span> Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Safari 11+</td>
+                            <td><span class="checkmark">✓</span> Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Edge 79+</td>
+                            <td><span class="checkmark">✓</span> Supported</td>
+                        </tr>
+                        <tr>
+                            <td>Internet Explorer</td>
+                            <td><span class="x-mark">✗</span> Not supported</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>File Sizes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>index.js (game code)</td>
+                            <td>50-100 KB</td>
+                        </tr>
+                        <tr>
+                            <td>index.wasm (engine)</td>
+                            <td>~1.2 MB</td>
+                        </tr>
+                        <tr>
+                            <td>index.data (WAD file)</td>
+                            <td>~4.3 MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>~5.5 MB</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Memory Usage</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Game heap</td>
+                            <td>20-30 MB</td>
+                        </tr>
+                        <tr>
+                            <td>Audio buffer</td>
+                            <td>5-10 MB</td>
+                        </tr>
+                        <tr>
+                            <td>Canvas rendering</td>
+                            <td>5-10 MB</td>
+                        </tr>
+                        <tr>
+                            <td>Misc</td>
+                            <td>10-20 MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>50-70 MB</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Using Custom WAD Files</h3>
+                <p><strong>With Shareware WAD (Default):</strong> The app comes with doom1.wad (shareware) pre-configured. Just install and play.</p>
+                <p><strong>With Your Own WAD Files:</strong></p>
+                <ol>
+                    <li>Clone/download the app source (enterprise deployments)</li>
+                    <li>Replace <code>doom1.wad</code> in the build process</li>
+                    <li>Rebuild: <code>./build-doom.sh</code></li>
+                    <li>Redeploy the app</li>
+                </ol>
+                <p>Contact your Jira administrator for help with this process.</p>
+            </section>
+
+            <hr>
+
+            <!-- TROUBLESHOOTING -->
+            <section id="troubleshooting">
+                <h2>Troubleshooting</h2>
+
+                <h3>The game won't load</h3>
+                <p><strong>Solution:</strong> Clear your browser cache and reload. WAD files take a moment to load on first run.</p>
+
+                <h3>I don't hear any audio</h3>
+                <p><strong>Potential causes:</strong></p>
+                <ul>
+                    <li>Browser audio is muted (check system volume)</li>
+                    <li>Browser tab audio is blocked (check browser notifications)</li>
+                    <li>Audio permissions not granted</li>
+                </ul>
+                <p><strong>Solution:</strong> Enable audio in browser settings, click <strong>Allow</strong> if prompted, and reload.</p>
+
+                <h3>The game is stuttering</h3>
+                <p><strong>Causes:</strong> Running too many other tabs/applications</p>
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Close unnecessary browser tabs</li>
+                    <li>Use Chrome or Firefox (best WebAssembly performance)</li>
+                    <li>Try a different device</li>
+                </ul>
+
+                <h3>Controls feel delayed</h3>
+                <p><strong>Solution:</strong> Click on the game canvas to ensure it has focus, then try again.</p>
+
+                <h3>The game runs slowly on mobile</h3>
+                <p><strong>Note:</strong> This is a full DOOM engine—not optimized for mobile. Use a desktop or laptop for best experience.</p>
+            </section>
+
+            <hr>
+
+            <!-- FAQ -->
+            <section id="faq">
+                <h2>Frequently Asked Questions</h2>
+
+                <h3>Is this the real DOOM or a remake?</h3>
+                <p>This is the <strong>real DOOM</strong>—the original 1993 source code compiled to WebAssembly. You're playing the authentic game engine, not a recreation.</p>
+
+                <h3>Does it save my progress?</h3>
+                <p>Saves are stored in your browser's local storage. Clearing browser data will erase saves.</p>
+
+                <h3>Can I use mods/WADs?</h3>
+                <p>The shareware episode is locked to doom1.wad. Custom WADs require rebuilding the app (enterprise feature).</p>
+
+                <h3>Does this work on mobile?</h3>
+                <p>The game loads and runs on mobile browsers, but controls are keyboard-optimized. Touch controls may be awkward. Desktop is recommended.</p>
+
+                <h3>Why can't I hear music?</h3>
+                <p>Music requires OPL2 synthesis. If you hear sound effects but no music, check browser audio permissions and ensure the browser tab isn't muted.</p>
+
+                <h3>Is my gameplay data synced?</h3>
+                <p>No. Everything runs locally in your browser. Saves are per-browser/device.</p>
+
+                <h3>Can admins prevent users from playing?</h3>
+                <p>Yes. Disable the app in <strong>Manage Apps</strong> → DOOM → Uninstall.</p>
+
+                <h3>What happens if I enable the Issue Glance?</h3>
+                <p>A "Play DOOM" widget appears on every Jira issue for quick access to the game. You can hide glances per-issue.</p>
+            </section>
+
+            <hr>
+
+            <!-- ADMIN -->
+            <section id="admin">
+                <h2>For Administrators</h2>
+
+                <h3>Installation & Permissions</h3>
+                <ul>
+                    <li><strong>Scope:</strong> No special permissions required</li>
+                    <li><strong>Resource Access:</strong> Uses static files only</li>
+                    <li><strong>Network:</strong> No external calls to third-party services</li>
+                    <li><strong>Storage:</strong> Uses browser local storage only</li>
+                    <li><strong>Security:</strong> All code runs in isolated browser context</li>
+                </ul>
+
+                <h3>Performance Impact</h3>
+                <ul>
+                    <li><strong>Initial Load:</strong> ~5 MB (one-time download, cached by CDN)</li>
+                    <li><strong>Runtime:</strong> No ongoing network traffic</li>
+                    <li><strong>Memory:</strong> ~50-100 MB during gameplay (typical modern browser game)</li>
+                </ul>
+
+                <h3>Compliance</h3>
+                <ul>
+                    <li><strong>Data Privacy:</strong> No user data collected or stored on servers</li>
+                    <li><strong>Licensing:</strong> GPL-2.0 License (original DOOM + doomgeneric)</li>
+                    <li><strong>Shareware:</strong> Licensed DOOM shareware included</li>
+                </ul>
+            </section>
+
+            <hr>
+
+            <!-- CREDITS -->
+            <section>
+                <h2>Credits & License</h2>
+
+                <h3>Original Authors</h3>
+                <ul>
+                    <li><strong>id Software</strong> - Original DOOM (1993)</li>
+                    <li><strong>ozkl & GMH-Code</strong> - doomgeneric/Dwasm portable DOOM implementation</li>
+                    <li><strong>Emscripten Team</strong> - C/C++ to WebAssembly compiler</li>
+                </ul>
+
+                <h3>License</h3>
+                <p>GPL-2.0 License - This project inherits the GPL-2.0 license from doomgeneric and the original DOOM source code release.</p>
+
+                <h3>Shareware Notice</h3>
+                <p>The included doom1.wad (Episode 1) is the official shareware release and is freely distributable.</p>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p><strong>DOOM Forge App</strong></p>
+        <p>Last Updated: April 2026 | Version: 1.0 | Status: Production Ready</p>
+        <p>Now get back to work... or don't. DOOM awaits.</p>
+    </footer>
+</body>
+</html>

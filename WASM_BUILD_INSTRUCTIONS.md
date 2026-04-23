@@ -12,19 +12,19 @@ doomgeneric is specifically designed to be easily portable and has a well-mainta
 ## Prerequisites
 
 ### macOS
-```bash
+\`\`\`bash
 brew install emscripten
-```
+\`\`\`
 
 ### Linux (Ubuntu/Debian)
-```bash
+\`\`\`bash
 # Install Emscripten
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
 ./emsdk install latest
 ./emsdk activate latest
 source ./emsdk_env.sh
-```
+\`\`\`
 
 ### Windows
 1. Install WSL2 (Windows Subsystem for Linux)
@@ -33,15 +33,15 @@ source ./emsdk_env.sh
 ## Building
 
 1. **Clone the doomgeneric repository:**
-   ```bash
+   \`\`\`bash
    git clone https://github.com/ozkl/doomgeneric.git
    cd doomgeneric/doomgeneric
-   ```
+   \`\`\`
 
 2. **Build the Emscripten port:**
-   ```bash
+   \`\`\`bash
    make -f Makefile.emscripten
-   ```
+   \`\`\`
 
    That's it! The build is much simpler than Chocolate Doom.
 
@@ -54,10 +54,10 @@ source ./emsdk_env.sh
 ## Getting the Shareware WAD
 
 1. **Download doom1.wad:**
-   ```bash
+   \`\`\`bash
    cd doomgeneric/doomgeneric
    wget https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad
-   ```
+   \`\`\`
 
    Or from other sources:
    - https://archive.org/details/DoomsharewareEpisode (search for "doom shareware")
@@ -69,29 +69,29 @@ source ./emsdk_env.sh
 ## Copying Files to Forge App
 
 1. **Copy the compiled files:**
-   ```bash
+   \`\`\`bash
    # From the doomgeneric/doomgeneric directory
    cp doomgeneric.js /path/to/your/forge-app/static/doom/doom-wasm.js
    cp doomgeneric.wasm /path/to/your/forge-app/static/doom/
    cp doomgeneric.data /path/to/your/forge-app/static/doom/
-   ```
+   \`\`\`
 
    Note: We're renaming `doomgeneric.js` to `doom-wasm.js` to match our HTML file.
 
 2. **Verify file structure:**
-   ```
+   \`\`\`
    static/doom/
    ├── index.html
    ├── doom-wasm.js
    ├── doomgeneric.wasm
    └── doomgeneric.data
-   ```
+   \`\`\`
 
 ## Quick Setup Script
 
 Save this as `build-doom.sh` in your Forge app root:
 
-```bash
+\`\`\`bash
 #!/bin/bash
 
 # Clone and build doomgeneric
@@ -118,13 +118,13 @@ cp doomgeneric.wasm ../../static/doom/
 cp doomgeneric.data ../../static/doom/
 
 echo "Done! Doom is ready to deploy."
-```
+\`\`\`
 
 Make it executable and run:
-```bash
+\`\`\`bash
 chmod +x build-doom.sh
 ./build-doom.sh
-```
+\`\`\`
 
 ## Alternative: Use Pre-built Demo Files
 
@@ -147,12 +147,12 @@ You can download the working files from the live demo:
 
 Modify the Module configuration in `index.html`:
 
-```javascript
+\`\`\`javascript
 var Module = {
     arguments: ['-iwad', 'doom1.wad', '-window'],
     // ... rest of config
 };
-```
+\`\`\`
 
 ### Supported Command-Line Arguments
 
@@ -170,20 +170,20 @@ This error occurs with Chocolate Doom's older autoconf scripts. That's why we sw
 
 ### Emscripten Version Check
 
-```bash
+\`\`\`bash
 emcc --version
 # Should show 4.0.22 or similar
-```
+\`\`\`
 
 ### Make Command Not Found
 
-```bash
+\`\`\`bash
 # macOS
 brew install make
 
 # Linux
 sudo apt-get install build-essential
-```
+\`\`\`
 
 ### Files Don't Load in Browser
 
@@ -206,13 +206,13 @@ This fits comfortably within Forge's static resource limits.
 
 Before deploying to Forge:
 
-```bash
+\`\`\`bash
 # Start local server in static/doom directory
 cd static/doom
 python3 -m http.server 8000
 
 # Open browser to http://localhost:8000
-```
+\`\`\`
 
 ## Next Steps
 
@@ -228,6 +228,6 @@ After building and copying the files:
 - [Live Demo](https://ozkl.github.io/doomgeneric/) - Working example
 - [Emscripten Documentation](https://emscripten.org/docs/getting_started/index.html)
 - [DOOM Wiki](https://doomwiki.org/) - Game information and resources
-```
+\`\`\`
 
-```html file="" isHidden
+\`\`\`html file="" isHidden
