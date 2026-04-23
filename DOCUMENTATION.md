@@ -1,4 +1,6 @@
-# 🎮 DOOM Forge App - Complete Documentation
+![DOOM Forge App](https://hebbkx1anhila5yf.public.blob.vercel-storage.com/jira-doom-SKLECYuu4V8oCypARgZDX8ZIdG68Ow.png)
+
+# DOOM Forge App - Complete Documentation
 
 ## Welcome to DOOM for Jira and Confluence
 
@@ -306,4 +308,4 @@ The included doom1.wad (Episode 1) is the official shareware release and is free
 **Version**: 1.0  
 **Status**: Production Ready
 
-🎮 **Now get back to work... or don't. DOOM awaits.**
+Now get back to work... or don't. DOOM awaits.
