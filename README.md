@@ -20,25 +20,23 @@ A doomgeneric WebAssembly port packaged as a Forge app for Atlassian Jira and Co
 ### Prerequisites
 
 1. Install the Forge CLI:
-\`\`\`bash
-npm install -g @forge/cli
-\`\`\`
+   
+    npm install -g @forge/cli
 
-2. Install Emscripten:
-\`\`\`bash
+3. Install Emscripten:
+
 # macOS
-brew install emscripten
+    brew install emscripten
 
 # Linux - see WASM_BUILD_INSTRUCTIONS.md
-\`\`\`
+
 
 ### Build and Deploy
 
 1. **Build DOOM files** (automated):
-\`\`\`bash
-chmod +x build-doom.sh
-./build-doom.sh
-\`\`\`
+
+    chmod +x build-doom.sh
+
 
 This script will:
 - Clone the doomgeneric repository
@@ -47,24 +45,23 @@ This script will:
 - Copy files to the correct locations
 
 2. **Login to Forge**:
-\`\`\`bash
-forge login
-\`\`\`
+ 
+    forge login
+ 
 
 3. **Register the app** (first time only):
-\`\`\`bash
-forge register
-\`\`\`
+ 
+    forge register
+ 
 
 4. **Deploy**:
-\`\`\`bash
-forge deploy
-\`\`\`
+ 
+    forge deploy
+ 
 
 5. **Install to your site**:
-\`\`\`bash
-forge install
-\`\`\`
+ 
+    forge install
 
 ## Controls
 
@@ -119,7 +116,7 @@ This app uses doomgeneric, a highly portable DOOM source port specifically desig
 
 ## File Structure
 
-\`\`\`
+
 forge-doom-app/
 ├── manifest.yml                    # Forge app configuration
 ├── package.json                    # Node dependencies
@@ -134,15 +131,14 @@ forge-doom-app/
 ├── build/                         # Build artifacts (gitignored)
 │   └── doomgeneric/              # Cloned repository
 └── WASM_BUILD_INSTRUCTIONS.md     # Detailed build guide
-\`\`\`
+
 
 ## Building from Source
 
 ### Automated Build (Recommended)
 
-\`\`\`bash
-./build-doom.sh
-\`\`\`
+    ./build-doom.sh
+
 
 The script handles everything:
 - Clones doomgeneric repository
@@ -158,12 +154,11 @@ See `WASM_BUILD_INSTRUCTIONS.md` for detailed manual build instructions.
 
 ### Local Testing
 
-\`\`\`bash
-# Start local tunnel
+
+## Start local tunnel
 forge tunnel
 
-# Access at the provided URL
-\`\`\`
+## Access at the provided URL
 
 ### Modifying the Game
 
