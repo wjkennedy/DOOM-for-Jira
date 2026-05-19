@@ -17,11 +17,18 @@
             <p id="progress">Initializing...</p>
         </div>
 
-        <div id="status">
-            <p id="statusText">Ready to play</p>
+        <div class="game-toolbar">
+            <div id="status">
+                <p id="statusText">Ready to play</p>
+            </div>
+            <button id="fullscreenButton" class="fullscreen-button" type="button" aria-pressed="false">
+                Full screen
+            </button>
         </div>
 
-        <canvas id="canvas" tabindex="-1"></canvas>
+        <div id="gameFrame" class="game-frame">
+            <canvas id="canvas" tabindex="-1"></canvas>
+        </div>
 
         <div class="controls-info">
             <h3>Controls</h3>
@@ -49,17 +56,113 @@
             <div class="control-row">
                 <span class="key">ESC</span> Menu
             </div>
+            <div class="control-row">
+                <span class="key">F</span> Toggle Full Screen
+            </div>
         </div>
     </div>
 
     <script type='text/javascript'>
         document.addEventListener('DOMContentLoaded', function() {
             var canvas = document.getElementById('canvas');
+            var container = document.getElementById('container');
+            var gameFrame = document.getElementById('gameFrame');
+            var fullscreenButton = document.getElementById('fullscreenButton');
+
+            function isFullscreen() {
+                return Boolean(document.fullscreenElement || document.webkitFullscreenElement) ||
+                    container.classList.contains('app-fullscreen');
+            }
+
+            function updateFullscreenButton() {
+                var active = isFullscreen();
+                fullscreenButton.textContent = active ? 'Exit full screen' : 'Full screen';
+                fullscreenButton.setAttribute('aria-pressed', active ? 'true' : 'false');
+            }
+
+            function enterAppFullscreenFallback() {
+                container.classList.add('app-fullscreen');
+                document.body.classList.add('fullscreen-active');
+                updateFullscreenButton();
+                canvas.focus();
+            }
+
+            function exitAppFullscreenFallback() {
+                container.classList.remove('app-fullscreen');
+                document.body.classList.remove('fullscreen-active');
+                updateFullscreenButton();
+            }
+
+            function enterFullscreen() {
+                var requestFullscreen = gameFrame.requestFullscreen ||
+                    gameFrame.webkitRequestFullscreen ||
+                    gameFrame.msRequestFullscreen;
+
+                if (requestFullscreen) {
+                    try {
+                        var result = requestFullscreen.call(gameFrame);
+                        if (result && result.catch) {
+                            result.catch(enterAppFullscreenFallback);
+                        }
+                    } catch (error) {
+                        enterAppFullscreenFallback();
+                    }
+                } else {
+                    enterAppFullscreenFallback();
+                }
+
+                canvas.focus();
+            }
+
+            function exitFullscreen() {
+                var exit = document.exitFullscreen ||
+                    document.webkitExitFullscreen ||
+                    document.msExitFullscreen;
+
+                if ((document.fullscreenElement || document.webkitFullscreenElement) && exit) {
+                    exit.call(document);
+                }
+
+                exitAppFullscreenFallback();
+                canvas.focus();
+            }
+
+            function toggleFullscreen() {
+                if (isFullscreen()) {
+                    exitFullscreen();
+                } else {
+                    enterFullscreen();
+                }
+            }
+
+            fullscreenButton.addEventListener('click', toggleFullscreen);
+
+            function handleFullscreenChange() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    document.body.classList.remove('fullscreen-active');
+                } else {
+                    document.body.classList.add('fullscreen-active');
+                    container.classList.remove('app-fullscreen');
+                    canvas.focus();
+                }
+
+                updateFullscreenButton();
+            }
+
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
             canvas.addEventListener('contextmenu', function(event) {
                 event.preventDefault();
             });
 
             document.addEventListener('keydown', function(event) {
+                if (event.code === 'KeyF') {
+                    event.preventDefault();
+                    toggleFullscreen();
+                    return;
+                }
+
                 var keyMap = {
                     'KeyW': 'ArrowUp',
                     'KeyS': 'ArrowDown',
